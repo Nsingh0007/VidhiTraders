@@ -19,7 +19,7 @@ import {selectAppLogo} from '../../Store/Slices/AuthSlice';
 const SignupScreen = () => {
   const {colors, dark} = useTheme();
   const styles = getStyles(colors);
-  const appLogo = useTypedSelector(selectAppLogo);
+  const {appLogo, companyName}  = useTypedSelector(selectAppLogo);
 
   const [state, setState] = useState({
     firstName: '',
@@ -187,7 +187,7 @@ const SignupScreen = () => {
             {/* <AuthSVG /> */}
           </View>
 
-          <CustomText style={styles.heading}>Let’s you in </CustomText>
+          <CustomText style={styles.heading}>{companyName||"Vidhi Rice Traders"}</CustomText>
           <View style={styles.buttonContainer}>
             <View style={{width: '100%', marginTop: moderateScale(15)}}>
               <CustomInput

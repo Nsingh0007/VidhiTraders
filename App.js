@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StatusBar } from 'react-native';
+import { LogBox, StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import GlobalStyles from './src/components/GlobalStyles/GlobalStyles';
 
@@ -12,6 +12,8 @@ import { setAuthToken, setUserProfile } from './src/Store/Slices/AuthSlice';
 import { selectIsLoading } from './src/Store/Slices/LoaderSlice';
 import Loader from './src/components/Loader';
 import { COLOR, COLOR_DARK, LocalStorage } from './src/utils/Resource';
+
+LogBox.ignoreAllLogs();
 
 const App = () => {
   let isDark = false;

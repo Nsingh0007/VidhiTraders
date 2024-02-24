@@ -1,4 +1,4 @@
-package com.vidhitraders
+package com.vidhitraders.app
 
 import android.app.Application
 import com.facebook.react.PackageList

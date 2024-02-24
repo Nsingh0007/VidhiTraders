@@ -49,7 +49,7 @@ const CheckoutScreen = props => {
   const cart = useTypedSelector(selectCartItems);
   const userData = useTypedSelector(selectUserProfile);
   const [useDefaultAddress, setUseDefaultAddress] = useState(true);
-  const appLogo = useTypedSelector(selectAppLogo);
+  const {appLogo, companyName} = useTypedSelector(selectAppLogo);
 
   useFocusEffect(
     useCallback(() => {

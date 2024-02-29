@@ -7,7 +7,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import CustomText from '../../components/CustomText/CustomText';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import {moderateScale, moderateVerticalScale} from '../../utils/responsive';
-import {FONTFAMILY, FONTSIZE, RoutesName, Strings} from '../../utils/Resource';
+import {FONTFAMILY, FONTSIZE, RoutesName, Strings, width} from '../../utils/Resource';
 import {AuthSVG, EmailSVG, KeySvg} from '../../assets/SVG';
 import Container from '../../components/Container';
 import StringsConstants from '../../utils/constants/Strings';
@@ -173,14 +173,12 @@ const SignupScreen = () => {
             {appLogo && (
               <View
                 style={{
-                  height: 70,
-                  width: 70,
-                  bottom: 10,
-                  position: 'absolute',
+                  height: 200,
+                  width: width *0.8,
                 }}>
                 <Image
                   source={{uri: appLogo}}
-                  style={{height: '100%', width: '100%'}}
+                  style={{height: '100%', width: '100%', resizeMode: 'cover', borderRadius: 10}}
                 />
               </View>
             )}
@@ -283,17 +281,16 @@ const getStyles = colors => {
       flex: 1,
     },
     heading: {
-      // fontFamily: FONTFAMILY.PoppinsRegular,
       fontSize: FONTSIZE.Text32,
-
       fontWeight: '600',
       fontFamily: FONTFAMILY.PoppinsSemiBold,
+      marginTop: -20
     },
     svgContainer: {
       justifyContent: 'center',
       alignItems: 'center',
       paddingVertical: moderateVerticalScale(36),
-      marginTop: '15%',
+      marginTop: '2%',
     },
     buttonContainer: {
       width: '90%',

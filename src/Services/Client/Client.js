@@ -28,7 +28,7 @@ client.interceptors.request.use(
 
 client.interceptors.response.use(
   res => {
-    console.log(res.data)
+   
     if (200 <= res.status >= 202) {
       store.dispatch(setIsLoading(false));
       throw res.data;

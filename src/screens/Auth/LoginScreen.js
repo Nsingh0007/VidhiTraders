@@ -153,12 +153,7 @@ const LoginScreen = () => {
                 }}>
                 <Image
                   source={{uri: appLogo}}
-                  style={{
-                    height: '100%',
-                    width: '100%',
-                    resizeMode: 'cover',
-                    borderRadius: 10,
-                  }}
+                  style={{height: '100%', width: '100%', resizeMode: 'cover', borderRadius: 10}}
                 />
               </View>
             )}

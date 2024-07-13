@@ -3,16 +3,18 @@ import {
   useNavigation,
   useTheme,
 } from '@react-navigation/native';
-import React, {useCallback, useEffect, useState} from 'react';
-import {ScrollView, StyleSheet, TouchableOpacity, View} from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import PhonePePaymentSDK from 'react-native-phonepe-pg';
-import RazorpayCheckout from 'react-native-razorpay';
-import RNUpiPayment from 'react-native-upi-payment';
-import {VerifyOrder} from '../../Services/AppServices/CartServices';
-import {createOrder} from '../../Services/AppServices/ShopService';
-import {useTypedSelector} from '../../Store/MainStore';
-import {selectAppLogo, selectUserProfile} from '../../Store/Slices/AuthSlice';
-import {selectCartItems} from '../../Store/Slices/CartSlice';
+import CryptoJS from 'rn-crypto-js';
+import {
+  VerifyOrder,
+  payLaterOrder,
+} from '../../Services/AppServices/CartServices';
+import { createOrder } from '../../Services/AppServices/ShopService';
+import { useTypedSelector } from '../../Store/MainStore';
+import { selectAppLogo, selectUserProfile } from '../../Store/Slices/AuthSlice';
+import { selectCartItems } from '../../Store/Slices/CartSlice';
 import Container from '../../components/Container';
 import CustomButton from '../../components/CustomButton';
 import CustomInput from '../../components/CustomInput';
@@ -25,12 +27,13 @@ import {
   RoutesName,
   Strings,
 } from '../../utils/Resource';
-import {showError, showSuccess} from '../../utils/helperFunction';
-import CryptoJS from 'rn-crypto-js';
+import { showError, showSuccess } from '../../utils/helperFunction';
 
+import { Modalize } from 'react-native-modalize';
 import base64 from '../../utils/Resource/base64';
-import encodeUtf8 from '../../utils/Resource/utf8';
 const CheckoutScreen = props => {
+  const modalizeRef = useRef();
+
   const pgData = {
     environmentForSDK: 'PRODUCTION',
     merchantId: 'M22KO34N63OCR',
@@ -315,10 +318,54 @@ const CheckoutScreen = props => {
       onOrderPlace(ordersBody);
     } catch (error) {}
   };
+
+  const payLater = async () => {
+    try {
+      let errorState = [
+        firstNameHasError,
+        lastNameHasError,
+        phoneHasError,
+        addressHasError,
+        cityHasError,
+        stateRegionHasError,
+        zipHasError,
+      ];
+      if (errorState.find(ele => ele)) {
+        return showError('All Fields are required');
+      }
+      const ordersBody = {
+        firstName,
+        lastName,
+        streetAddress: address,
+        city,
+        state: stateRegion,
+        zipCode: zip,
+        mobile: phone,
+        user: userData._id,
+        _id,
+      };
+
+      if (_id === '') {
+        delete ordersBody._id;
+      }
+      if (address.trim() == '') {
+        return showError('Please select a valid address');
+      }
+
+      const orderData = await createOrder(ordersBody);
+      if (orderData.success) {
+        const orderUpdated = await payLaterOrder(orderData);
+        modalizeRef?.current.close();
+        navigate(RoutesName.HOME);
+        showSuccess('Order Placed Successfully!');
+      }
+    } catch (error) {
+      console.log('🚀 ~ error:', error);
+    }
+  };
   return (
     <Container>
       <BackHeader Title="Checkout" />
-
       <ScrollView contentContainerStyle={styles.contentContainerStyle}>
         {useDefaultAddress && (
           <View>
@@ -475,12 +522,43 @@ const CheckoutScreen = props => {
               Amount To Pay:
             </CustomText>
             <CustomText style={styles.H0}>
-              ₹ {cart.totalDiscountedPrice}
+              ₹ {cart.totalDiscountedPrice?.toFixed(2)}
             </CustomText>
           </View>
-          <CustomButton title="PLACE ORDER" onPress={CreateNewOrder} />
+          <CustomButton title="Pay Now" onPress={CreateNewOrder} />
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginVertical: 10,
+            }}>
+            <CustomText style={[styles.H0, {color: colors.GRAY100}]}>
+              OR
+            </CustomText>
+          </View>
+
+          <CustomButton
+            title="Pay Later"
+            onPress={() => modalizeRef?.current.open()}
+          />
         </View>
       </ScrollView>
+      <Modalize ref={modalizeRef} adjustToContentHeight>
+        <View style={{padding: 20}}>
+          <CustomText
+            style={[styles.H0, {color: colors.GRAY100}]}
+            numberOfLines={0}>
+            Continuing with "Pay Later" will create an order without requiring
+            immediate payment.
+          </CustomText>
+          <CustomText
+            style={[styles.H0, {color: colors.TEXT_BLUE, marginVertical: 10}]}
+            numberOfLines={0}>
+            Payment is expected upon collection of the order.
+          </CustomText>
+          <CustomButton title="Continue Pay Later" onPress={payLater} />
+        </View>
+      </Modalize>
     </Container>
   );
 };
@@ -516,7 +594,6 @@ const getStyles = colors => {
       backgroundColor: colors.BACKGROUND,
       ...GlobalStyles.shadow,
       shadowColor: colors.GRAY100,
-
       borderRadius: 8,
       marginVertical: 20,
       padding: 25,

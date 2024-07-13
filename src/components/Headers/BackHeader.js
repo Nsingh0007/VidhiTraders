@@ -5,9 +5,10 @@ import {useNavigation, useTheme} from '@react-navigation/native';
 
 import {BackSVG} from '../../assets/SVG';
 import {FONTFAMILY, FONTSIZE} from '../../utils/Resource';
-import {moderateScale} from '../../utils/responsive';
+import {moderateScale, verticalScale} from '../../utils/responsive';
 import CustomText from '../CustomText/CustomText';
 import GlobalStyles from '../GlobalStyles/GlobalStyles';
+import { SafeAreaView } from 'react-native-safe-area-context';
 const BackHeader = ({
   Title = '',
   goBack,
@@ -79,8 +80,9 @@ const getStyles = colors => {
       flexDirection: 'row',
       paddingHorizontal: moderateScale(15),
       alignItems: 'flex-end',
-      paddingVertical: 20,
-      height: 90,
+      paddingTop: verticalScale(40),
+      paddingBottom: verticalScale(10),
+      // height: 30,
       backgroundColor: colors.BACKGROUND,
     },
     title: {
